@@ -27,7 +27,7 @@ fun main(args: Array<String>) {
     val randomCandidate = candidateWords.random()
 
     while (true) {
-        println("Input a 5-letter word")
+        println("Input a 5-letter word:")
         val input = readln().lowercase()
 
         if (input == "exit") exit("The game is over.")
@@ -83,7 +83,7 @@ fun verifyFiles(wordsFileName: String, candidatesFileName: String) {
     }
 
     if (words.containsAll(candidateWords)) {
-        println("Words Virtuoso")
+        println("Words Virtuoso\n")
     } else {
         val amountMissing = candidateWords.count { !words.contains(it.lowercase()) }
         exit("Error: $amountMissing candidate words are not included in the $wordsFileName file.")
