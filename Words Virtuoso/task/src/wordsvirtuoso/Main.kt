@@ -15,17 +15,19 @@ fun main(args: Array<String>) {
     val wordsFile = File(wordsFileName)
     if (!wordsFile.exists()) exit("Error: The words file $wordsFileName doesn't exist.")
 
-    val candidates = File(candidatesFileName)
-    if (!candidates.exists()) exit("Error: The candidate words file $candidatesFileName doesn't exist.")
+    val candidatesFile = File(candidatesFileName)
+    if (!candidatesFile.exists()) exit("Error: The candidate words file $candidatesFileName doesn't exist.")
 
-    val words = wordsFile.readLines()
+    val words = mutableSetOf<String>()
+    for (line in wordsFile.readLines()) words.add(line.lowercase())
     if (words.any { !checkValid(it.lowercase()) }) {
         //Invalid words in the all words file
         val amountInvalid = words.count { !checkValid(it.lowercase()) }
         exit("Error: $amountInvalid invalid words were found in the $wordsFileName file.")
     }
 
-    val candidateWords = candidates.readLines()
+    val candidateWords = mutableSetOf<String>()
+    for (line in candidatesFile.readLines()) candidateWords.add(line.lowercase())
     if (candidateWords.any { !checkValid(it.lowercase()) }) {
         //Invalid words in the candidate words file
         val amountInvalid = candidateWords.count { !checkValid(it.lowercase()) }
