@@ -51,8 +51,10 @@ fun main(args: Array<String>) {
         if (input == randomWord) {
 
             if (turnCount == 1) {
+                //TODO: Figure out why this isn't working. Possibly it's complaining about an invisible character?
                 exit("""
                     ${colorString(input.uppercase(), Color.GREEN)}
+                    
                     Correct!
                     Amazing luck! The solution was found at once.
                 """.trimIndent())
