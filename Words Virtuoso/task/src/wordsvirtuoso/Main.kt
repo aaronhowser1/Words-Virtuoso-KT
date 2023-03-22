@@ -1,27 +1,49 @@
 package wordsvirtuoso
 
+import java.io.File
+
+const val auto = false
+const val debugCheckValid = false
+
 fun main() {
-    println("Input a 5-letter string:")
 
-    val input = readln().lowercase()
+    println("Input the words file:")
 
-    val output =
-        if (!lengthIs(input, 5)) "The input isn't a 5-letter string."
-        else if (allEnglish(input)) "The input has invalid characters."
-        else if (duplicateLetters(input)) "The input has duplicate letters."
-        else "The input is a valid string."
+    val input = if (!auto) readln() else "Words Virtuoso/task/src/wordsvirtuoso/words.txt"
+    val wordsFile = File(input)
 
-    println(output)
+    if (!wordsFile.exists()) {
+        println("Error: The words file $input doesn't exist.")
+        kotlin.system.exitProcess(1)
+    }
+
+    var invalidWords = 0
+    for (word in wordsFile.readLines()) if (!checkValid(word.lowercase())) invalidWords++
+
+    if (invalidWords > 0) {
+        println("Warning: $invalidWords invalid words were found in the $input file.")
+    } else {
+        println("All words are valid!")
+    }
 
 }
 
-fun lengthIs(input: String, length: Int): Boolean = input.length == length
+fun checkValid(input: String): Boolean {
+    fun lengthIs(length: Int): Boolean = input.length == length
 
-fun allEnglish(input: String): Boolean = input.any { it !in 'a'..'z' }
+    fun allEnglish(): Boolean = !input.any { it !in 'a'..'z' }
 
-fun duplicateLetters(input: String): Boolean {
-    for (char in input) {
-        if (input.count {char == it} > 1) return true
+    fun duplicateLetters(): Boolean {
+        for (char in input) {
+            if (input.count {char == it} > 1) return true
+        }
+        return false
     }
-    return false
+
+    val returnValue = lengthIs(5) && allEnglish() && !duplicateLetters()
+
+    if (!returnValue && debugCheckValid) println("$input is invalid: ${lengthIs(5)} ${allEnglish()} ${!duplicateLetters()}")
+
+    return returnValue
+
 }
