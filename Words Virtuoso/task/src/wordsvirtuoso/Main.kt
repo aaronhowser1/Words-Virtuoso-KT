@@ -2,7 +2,6 @@ package wordsvirtuoso
 
 import java.io.File
 
-const val auto = false
 const val debugCheckValid = false
 
 fun main(args: Array<String>) {
@@ -12,11 +11,21 @@ fun main(args: Array<String>) {
     val wordsFileName = args[0]
     val candidatesFileName = args[1]
 
+    verifyFiles(wordsFileName, candidatesFileName)
     val wordsFile = File(wordsFileName)
-    if (!wordsFile.exists()) exit("Error: The words file $wordsFileName doesn't exist.")
-
     val candidatesFile = File(candidatesFileName)
+
+
+
+}
+
+fun verifyFiles(wordsFileName: String, candidatesFileName: String) {
+    val wordsFile = File(wordsFileName)
+    val candidatesFile = File(candidatesFileName)
+
+    if (!wordsFile.exists()) exit("Error: The words file $wordsFileName doesn't exist.")
     if (!candidatesFile.exists()) exit("Error: The candidate words file $candidatesFileName doesn't exist.")
+
 
     val words = mutableSetOf<String>()
     for (line in wordsFile.readLines()) words.add(line.lowercase())
@@ -40,8 +49,6 @@ fun main(args: Array<String>) {
         val amountMissing = candidateWords.count { !words.contains(it.lowercase()) }
         exit("Error: $amountMissing candidate words are not included in the $wordsFileName file.")
     }
-
-
 }
 
 fun exit(exitMessage: String) {
