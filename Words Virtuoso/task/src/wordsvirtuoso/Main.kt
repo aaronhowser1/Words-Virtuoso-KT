@@ -25,7 +25,7 @@ fun main(args: Array<String>) {
     val candidateWords = mutableSetOf<String>()
     for (line in candidatesFile.readLines()) candidateWords.add(line.lowercase())
 
-    val randomWord = candidateWords.random().uppercase()
+    val randomWord = candidateWords.random()
 
     var turnCount = 0
     val startingTime = System.currentTimeMillis()
@@ -57,7 +57,7 @@ fun main(args: Array<String>) {
                 val endingTime = System.currentTimeMillis()
                 val secondsElapsed = TimeUnit.MILLISECONDS.toSeconds(endingTime - startingTime)
 
-                clues.add(input.uppercase())
+                clues.add(getClue(randomWord.uppercase(),input.uppercase()))
                 println(clues.joinToString("\n"))
 
                 exit("""
@@ -71,13 +71,10 @@ fun main(args: Array<String>) {
             else if (input.duplicateLetters()) println("The input has duplicate letters.")
             else if (!words.contains(input)) println("The input word isn't included in my words list.")
             else {
-                input = input.uppercase()
-                println(randomWord)
-                input.forEach {if (!randomWord.contains(it)) incorrectLetters.add(it)}
+                input.forEach {if (!randomWord.contains(it)) incorrectLetters.add(it.uppercaseChar())}
                 val clue = getClue(randomWord, input)
                 clues.add(clue)
                 printClues()
-//                println(incorrectLetters.sorted().joinToString(""))
         }
     }
 
