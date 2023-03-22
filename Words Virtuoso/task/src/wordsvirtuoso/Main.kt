@@ -25,11 +25,12 @@ fun main(args: Array<String>) {
     val candidateWords = mutableSetOf<String>()
     for (line in candidatesFile.readLines()) candidateWords.add(line.lowercase())
 
-    val randomCandidate = candidateWords.random()
+    val randomWord = candidateWords.random()
 
     var turnCount = 0
     val startingTime = System.currentTimeMillis()
     val clues = mutableSetOf<String>()
+    val discoveredIncorrectChars = mutableSetOf<Char>()
 
     while (true) {
         turnCount++
@@ -37,14 +38,19 @@ fun main(args: Array<String>) {
         val input = readln().lowercase()
 
         if (input == "exit") exit("The game is over.")
-        if (input == randomCandidate) {
+        if (input == randomWord) {
 
             if (turnCount == 1) {
-                exit("Amazing luck! The solution was found at once.")
+                exit("""
+                    ${input.uppercase()}
+                    Correct!
+                    Amazing luck! The solution was found at once.
+                """.trimIndent())
             } else {
                 val endingTime = System.currentTimeMillis()
                 val secondsElapsed = TimeUnit.MILLISECONDS.toSeconds(endingTime - startingTime)
 
+                clues.add(input.uppercase())
                 println(clues.joinToString("\n"))
 
                 exit("""
@@ -58,9 +64,11 @@ fun main(args: Array<String>) {
             else if (input.duplicateLetters()) println("The input has duplicate letters.")
             else if (!words.contains(input)) println("The input word isn't included in my words list.")
             else {
-                val clue = getClue(randomCandidate, input)
+                input.forEach {if (!randomWord.contains(it)) discoveredIncorrectChars.add(it.uppercaseChar())}
+                val clue = getClue(randomWord, input)
                 clues.add(clue)
-                println(clue)
+                println(clues.joinToString("\n"))
+                println(discoveredIncorrectChars.sorted().joinToString(""))
         }
     }
 
