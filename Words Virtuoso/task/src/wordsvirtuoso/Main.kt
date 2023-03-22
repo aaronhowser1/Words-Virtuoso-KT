@@ -1,6 +1,7 @@
 package wordsvirtuoso
 
 import java.io.File
+import java.util.concurrent.TimeUnit
 
 const val debugCheckValid = false
 
@@ -26,18 +27,44 @@ fun main(args: Array<String>) {
 
     val randomCandidate = candidateWords.random()
 
+    var turnCount = 0
+    val startingTime = System.currentTimeMillis()
+    val clues = mutableSetOf<String>()
+
     while (true) {
+        turnCount++
         println("Input a 5-letter word:")
         val input = readln().lowercase()
 
         if (input == "exit") exit("The game is over.")
-        if (input == randomCandidate) exit("Correct!")
+        if (input == randomCandidate) {
+
+            if (turnCount == 1) {
+                exit("Amazing luck! The solution was found at once.")
+            } else {
+                val endingTime = System.currentTimeMillis()
+                val secondsElapsed = TimeUnit.MILLISECONDS.toSeconds(endingTime - startingTime)
+
+                println(clues.joinToString("\n"))
+
+                exit("""
+                Correct!
+                The solution was found after $turnCount tries in $secondsElapsed seconds.
+            """.trimIndent())
+            }
+        }
         if (!input.validLength()) println("The input isn't a 5-letter word.")
             else if (!input.allEnglish()) println("One or more letters of the input aren't valid.")
             else if (input.duplicateLetters()) println("The input has duplicate letters.")
             else if (!words.contains(input)) println("The input word isn't included in my words list.")
-            else println(getClue(randomCandidate, input))
+            else {
+                val clue = getClue(randomCandidate, input)
+                clues.add(clue)
+                println(clue)
+        }
     }
+
+
 
 }
 
