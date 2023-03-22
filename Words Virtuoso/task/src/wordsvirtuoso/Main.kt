@@ -25,24 +25,31 @@ fun main(args: Array<String>) {
     val candidateWords = mutableSetOf<String>()
     for (line in candidatesFile.readLines()) candidateWords.add(line.lowercase())
 
-    val randomWord = candidateWords.random()
+    val randomWord = candidateWords.random().uppercase()
 
     var turnCount = 0
     val startingTime = System.currentTimeMillis()
     val clues = mutableSetOf<String>()
-    val discoveredIncorrectChars = mutableSetOf<Char>()
+    val incorrectLetters = mutableSetOf<Char>()
+
+    fun printClues() {
+
+        println(clues.joinToString("\n"))
+        for (char in incorrectLetters.sorted()) print(colorString( char.uppercase(),Color.AZURE))
+        print('\n')
+    }
 
     while (true) {
         turnCount++
         println("Input a 5-letter word:")
-        val input = readln().lowercase()
+        var input = readln()
 
         if (input == "exit") exit("The game is over.")
         if (input == randomWord) {
 
             if (turnCount == 1) {
                 exit("""
-                    ${input.uppercase()}
+                    ${colorString(input.uppercase(), Color.GREEN)}
                     Correct!
                     Amazing luck! The solution was found at once.
                 """.trimIndent())
@@ -64,27 +71,27 @@ fun main(args: Array<String>) {
             else if (input.duplicateLetters()) println("The input has duplicate letters.")
             else if (!words.contains(input)) println("The input word isn't included in my words list.")
             else {
-                input.forEach {if (!randomWord.contains(it)) discoveredIncorrectChars.add(it.uppercaseChar())}
+                input = input.uppercase()
+                println(randomWord)
+                input.forEach {if (!randomWord.contains(it)) incorrectLetters.add(it)}
                 val clue = getClue(randomWord, input)
                 clues.add(clue)
-                println(clues.joinToString("\n"))
-                println(discoveredIncorrectChars.sorted().joinToString(""))
+                printClues()
+//                println(incorrectLetters.sorted().joinToString(""))
         }
     }
-
-
 
 }
 
 fun getClue(secretWord: String, checkedWord: String): String {
-    fun checkChar(index: Int): Char {
-        val checkedChar = checkedWord[index]
-        // If it doesn't contain the char, _
-        return if (!secretWord.contains(checkedChar)) '_'
-            // If it does contain the char AT THE SAME INDEX, return capitalized
-            else if (secretWord[index] == checkedChar) checkedChar.uppercaseChar()
-            // If it does contain the char, but not at the same index. return lowercase
-            else checkedChar.lowercaseChar()
+    fun checkChar(index: Int): String {
+        val checkedChar = checkedWord[index].toString()
+        // If it doesn't contain the char, return it grey
+        if (!secretWord.contains(checkedChar)) return colorString(checkedChar, Color.GREY)
+        // If it does contain the char AT THE SAME INDEX, return green
+        if (secretWord[index].toString() == checkedChar) return colorString(checkedChar, Color.GREEN)
+        // If it does contain the char, but not at the same index. return yellow
+        return colorString(checkedChar, Color.YELLOW)
     }
     var output = ""
     for (i in 0..4) {
@@ -145,4 +152,16 @@ fun checkValid(input: String): Boolean {
     if (!returnValue && debugCheckValid) println("$input is invalid: ${input.validLength()} ${input.allEnglish()} ${!input.duplicateLetters()}")
 
     return returnValue
+}
+
+enum class Color(val colorCode: String) {
+    GREEN("\u001B[48:5:10m"),
+    YELLOW("\u001B[48:5:11m"),
+    GREY("\u001B[48:5:7m"),
+    AZURE("\u001B[48:5:14m"),
+    RESET("\u001B[0m")
+}
+
+fun colorString(letter: String, color: Color): String {
+    return "${color.colorCode}$letter${Color.RESET.colorCode}"
 }
