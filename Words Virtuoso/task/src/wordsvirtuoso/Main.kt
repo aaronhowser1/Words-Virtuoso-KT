@@ -31,11 +31,31 @@ fun main(args: Array<String>) {
         val input = readln().lowercase()
 
         if (input == "exit") exit("The game is over.")
-        if (input.length !=5) {
-            println("The input isn't a 5-letter word.")
-        }
+        if (input == randomCandidate) exit("Correct!")
+        if (!input.validLength()) println("The input isn't a 5-letter word.")
+            else if (!input.allEnglish()) println("One or more letters of the input aren't valid.")
+            else if (input.duplicateLetters()) println("The input has duplicate letters.")
+            else if (!words.contains(input)) println("The input word isn't included in my words list.")
+            else println(getClue(randomCandidate, input))
     }
 
+}
+
+fun getClue(secretWord: String, checkedWord: String): String {
+    fun checkChar(index: Int): Char {
+        val checkedChar = checkedWord[index]
+        // If it doesn't contain the char, _
+        return if (!secretWord.contains(checkedChar)) '_'
+            // If it does contain the char AT THE SAME INDEX, return capitalized
+            else if (secretWord[index] == checkedChar) checkedChar.uppercaseChar()
+            // If it does contain the char, but not at the same index. return lowercase
+            else checkedChar.lowercaseChar()
+    }
+    var output = ""
+    for (i in 0..4) {
+        output += checkChar(i)
+    }
+    return output
 }
 
 fun verifyFiles(wordsFileName: String, candidatesFileName: String) {
@@ -90,5 +110,4 @@ fun checkValid(input: String): Boolean {
     if (!returnValue && debugCheckValid) println("$input is invalid: ${input.validLength()} ${input.allEnglish()} ${!input.duplicateLetters()}")
 
     return returnValue
-
 }
