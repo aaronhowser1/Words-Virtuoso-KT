@@ -4,6 +4,9 @@ import java.io.File
 
 const val debugCheckValid = false
 
+// Launch arguments are:
+// "Words Virtuoso/task/src/wordsvirtuoso/words.txt" "Words Virtuoso/task/src/wordsvirtuoso/candidates.txt"
+
 fun main(args: Array<String>) {
 
     if (args.size != 2) exit("Error: Wrong number of arguments.")
@@ -15,7 +18,23 @@ fun main(args: Array<String>) {
     val wordsFile = File(wordsFileName)
     val candidatesFile = File(candidatesFileName)
 
+    val words = mutableSetOf<String>()
+    for (line in wordsFile.readLines()) words.add(line.lowercase())
 
+    val candidateWords = mutableSetOf<String>()
+    for (line in candidatesFile.readLines()) candidateWords.add(line.lowercase())
+
+    val randomCandidate = candidateWords.random()
+
+    while (true) {
+        println("Input a 5-letter word")
+        val input = readln().lowercase()
+
+        if (input == "exit") exit("The game is over.")
+        if (input.length !=5) {
+            println("The input isn't a 5-letter word.")
+        }
+    }
 
 }
 
@@ -44,7 +63,7 @@ fun verifyFiles(wordsFileName: String, candidatesFileName: String) {
     }
 
     if (words.containsAll(candidateWords)) {
-        exit("Words Virtuoso")
+        println("Words Virtuoso")
     } else {
         val amountMissing = candidateWords.count { !words.contains(it.lowercase()) }
         exit("Error: $amountMissing candidate words are not included in the $wordsFileName file.")
@@ -56,21 +75,19 @@ fun exit(exitMessage: String) {
     kotlin.system.exitProcess(1)
 }
 
-fun checkValid(input: String): Boolean {
-    fun lengthIs(length: Int): Boolean = input.length == length
-
-    fun allEnglish(): Boolean = !input.any { it !in 'a'..'z' }
-
-    fun duplicateLetters(): Boolean {
-        for (char in input) {
-            if (input.count {char == it} > 1) return true
-        }
-        return false
+fun String.validLength(): Boolean = this.length == 5
+fun String.allEnglish(): Boolean = !this.lowercase().any {it !in 'a'..'z'}
+fun String.duplicateLetters(): Boolean {
+    for (char in this) {
+        if (this.count {char == it} > 1) return true
     }
+    return false
+}
 
-    val returnValue = lengthIs(5) && allEnglish() && !duplicateLetters()
+fun checkValid(input: String): Boolean {
+    val returnValue = input.validLength() && input.allEnglish() && !input.duplicateLetters()
 
-    if (!returnValue && debugCheckValid) println("$input is invalid: ${lengthIs(5)} ${allEnglish()} ${!duplicateLetters()}")
+    if (!returnValue && debugCheckValid) println("$input is invalid: ${input.validLength()} ${input.allEnglish()} ${!input.duplicateLetters()}")
 
     return returnValue
 
