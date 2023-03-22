@@ -7,6 +7,9 @@ const val debugCheckValid = false
 
 // Launch arguments are:
 // "Words Virtuoso/task/src/wordsvirtuoso/words.txt" "Words Virtuoso/task/src/wordsvirtuoso/candidates.txt"
+// or alternatively:
+// "Words Virtuoso/task/src/wordsvirtuoso/oneword.txt" "Words Virtuoso/task/src/wordsvirtuoso/oneword.txt"
+
 
 fun main(args: Array<String>) {
 
@@ -42,7 +45,7 @@ fun main(args: Array<String>) {
     while (true) {
         turnCount++
         println("Input a 5-letter word:")
-        var input = readln()
+        val input = readln()
 
         if (input == "exit") exit("The game is over.")
         if (input == randomWord) {
