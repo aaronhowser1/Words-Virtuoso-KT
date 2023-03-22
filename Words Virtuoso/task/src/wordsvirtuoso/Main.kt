@@ -5,27 +5,46 @@ import java.io.File
 const val auto = false
 const val debugCheckValid = false
 
-fun main() {
+fun main(args: Array<String>) {
 
-    println("Input the words file:")
+    if (args.size != 2) exit("Error: Wrong number of arguments.")
 
-    val input = if (!auto) readln() else "Words Virtuoso/task/src/wordsvirtuoso/words.txt"
-    val wordsFile = File(input)
+    val wordsFileName = args[0]
+    val candidatesFileName = args[1]
 
-    if (!wordsFile.exists()) {
-        println("Error: The words file $input doesn't exist.")
-        kotlin.system.exitProcess(1)
+    val wordsFile = File(wordsFileName)
+    if (!wordsFile.exists()) exit("Error: The words file $wordsFileName doesn't exist.")
+
+    val candidates = File(candidatesFileName)
+    if (!candidates.exists()) exit("Error: The candidate words file $candidatesFileName doesn't exist.")
+
+    val words = wordsFile.readLines()
+    if (words.any { !checkValid(it.lowercase()) }) {
+        //Invalid words in the all words file
+        val amountInvalid = words.count { !checkValid(it.lowercase()) }
+        exit("Error: $amountInvalid invalid words were found in the $wordsFileName file.")
     }
 
-    var invalidWords = 0
-    for (word in wordsFile.readLines()) if (!checkValid(word.lowercase())) invalidWords++
+    val candidateWords = candidates.readLines()
+    if (candidateWords.any { !checkValid(it.lowercase()) }) {
+        //Invalid words in the candidate words file
+        val amountInvalid = candidateWords.count { !checkValid(it.lowercase()) }
+        exit("Error: $amountInvalid invalid words were found in the $candidatesFileName file.")
+    }
 
-    if (invalidWords > 0) {
-        println("Warning: $invalidWords invalid words were found in the $input file.")
+    if (words.containsAll(candidateWords)) {
+        exit("Words Virtuoso")
     } else {
-        println("All words are valid!")
+        val amountMissing = candidateWords.count { !words.contains(it.lowercase()) }
+        exit("Error: $amountMissing candidate words are not included in the $wordsFileName file.")
     }
 
+
+}
+
+fun exit(exitMessage: String) {
+    println(exitMessage)
+    kotlin.system.exitProcess(1)
 }
 
 fun checkValid(input: String): Boolean {
