@@ -38,8 +38,9 @@ fun main(args: Array<String>) {
     fun printClues() {
 
         println(clues.joinToString("\n"))
-        for (char in incorrectLetters.sorted()) print(colorString( char.uppercase(),Color.AZURE))
-        print('\n')
+        var wrongLettersString = ""
+        for (char in incorrectLetters.sorted()) wrongLettersString += char
+        println(colorString(wrongLettersString, Color.AZURE))
     }
 
     while (true) {
@@ -51,9 +52,8 @@ fun main(args: Array<String>) {
         if (input == randomWord) {
 
             if (turnCount == 1) {
-                //TODO: Figure out why this isn't working. Possibly it's complaining about an invisible character?
                 exit("""
-                    ${colorString(input.uppercase(), Color.GREEN)}
+                    ${getClue(randomWord.uppercase(), input.uppercase())}
                     
                     Correct!
                     Amazing luck! The solution was found at once.
